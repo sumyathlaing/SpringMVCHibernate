@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.support.PagedListHolder;
 import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.core.Authentication;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.smh.springmvc.model.User;
@@ -51,9 +52,24 @@ public class AppController {
     AuthenticationTrustResolver authenticationTrustResolver;
 
     @RequestMapping(value = { "/", "/list" }, method = RequestMethod.GET)
-    public String listUsers(ModelMap model) {
+    public String listUsers(ModelMap model, @RequestParam(required = false) Integer page) {
+
         List<User> users = userService.findAllUsers();
-        model.addAttribute("users", users);
+        PagedListHolder<User> pagedListHolder = new PagedListHolder<>(users);
+        pagedListHolder.setPageSize(2);
+        model.addAttribute("maxPages", pagedListHolder.getPageCount());
+
+        if (page == null || page < 1 || page > pagedListHolder.getPageCount())
+            page = 1;
+        model.addAttribute("page", page);
+
+        if (page == null || page < 1 || page > pagedListHolder.getPageCount()) {
+            pagedListHolder.setPage(0);
+            model.addAttribute("users", pagedListHolder.getPageList());
+        } else if (page <= pagedListHolder.getPageCount()) {
+            pagedListHolder.setPage(page - 1);
+            model.addAttribute("users", pagedListHolder.getPageList());
+        }
         model.addAttribute("loggedinuser", getPrincipal());
         return "userlist";
     }
