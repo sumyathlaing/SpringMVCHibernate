@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
@@ -62,8 +61,8 @@ public class AppController {
 
         if (page == null || page < 1 || page > pagedListHolder.getPageCount())
             page = 1;
-
         model.addAttribute("page", page);
+
         if (page == null || page < 1 || page > pagedListHolder.getPageCount()) {
             pagedListHolder.setPage(0);
             model.addAttribute("users", pagedListHolder.getPageList());

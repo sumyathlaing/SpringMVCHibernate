@@ -83,3 +83,9 @@ body, #mainWrapper, .form-control {
 .authbar {
 	margin-bottom: 15px;
 }
+
+#pagination {
+	padding-right: 10px;
+	font-size: 17px;
+	text-align: right;
+}
